@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
+const { Mongo } = require('./src/config');
 const {
     Projects
 } = require('./src/routes');
@@ -17,8 +18,9 @@ app.use(
 
 app.use(
     Projects()
-)
+);
 
 app.listen(3000, () => {
     console.log('Servidor a rodar na porta 3000');
+    Mongo.connect();
 });
