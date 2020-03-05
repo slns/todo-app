@@ -1,3 +1,4 @@
+'use strict';
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
@@ -12,7 +13,7 @@ app.use(
         extended: false
     }),
     bodyParser.json(),
-)
+);
 
 app.use(
     Projects()

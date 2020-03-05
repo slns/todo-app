@@ -1,15 +1,21 @@
-const Mongoose = require('mongoose');
+'use strict';
 
-const schema = new Mongoose.Schema({
+const Mongoose = require('mongoose');
+const Schema = Mongoose.Schema;
+
+const schema = new Schema({
     name: {
         type: String,
         required: true
     },
     userId: {
-        id: Number
+        type: String,
+        required: true
     },
-    tasks: {
-        type: Array
+    createdAt: {
+        type: Date,
+        required: true,
+        default: new Date()
     }
 });
 

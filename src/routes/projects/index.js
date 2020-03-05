@@ -1,3 +1,4 @@
+'use strict';
 const { Router } = require('express');
 const ProjectsController = require('../../controllers/projects');
 const route = Router();
@@ -5,6 +6,11 @@ const route = Router();
 
 // select
 route.get('/projects', (request, response, next) => {
+    ProjectsController.select(request, response);
+});
+
+// select :id
+route.get('/projects/:projectId', (request, response, next) => {
     ProjectsController.select(request, response);
 });
 

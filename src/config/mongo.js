@@ -1,3 +1,4 @@
+'use strict';
 const mongoose = require('mongoose');
 const MONGO_URI = 'mongodb://localhost:27017/todoEdirect';
 
@@ -9,11 +10,11 @@ module.exports.connect = () => {
         });
         mongoose.set('useFindAndModify', false);
         mongoose.connection.on('connected', () => {
-            console.log('Mongo connected');
+            console.log('MongoDB connected');
             resolve();
         });
-        mongoose.connection.on('error', (err) => reject(err))
-    })
+        mongoose.connection.on('error', (err) => reject(err));
+    });
 };
 
 module.exports.close = () => {
