@@ -1,5 +1,5 @@
-/*jslint node: true */
 'use strict';
+
 const { ProjectsModel } = require('../../models');
 const { CreateValidator } = require('../../validators/projects');
 

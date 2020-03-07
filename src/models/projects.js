@@ -1,4 +1,3 @@
-/*jslint node: true */
 'use strict';
 
 const Mongoose = require('mongoose');

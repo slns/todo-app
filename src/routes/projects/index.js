@@ -1,5 +1,5 @@
-/*jslint node: true */
 'use strict';
+
 const { Router } = require('express');
 const ProjectsController = require('../../controllers/projects');
 const route = Router();

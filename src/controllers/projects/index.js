@@ -1,5 +1,5 @@
-/*jslint node: true */
 'use strict';
+
 const create = require('./create');
 const select = require('./select');
 const update = require('./update');
