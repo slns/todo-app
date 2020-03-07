@@ -1,3 +1,4 @@
+/*jslint node: true */
 'use strict';
 const { ProjectsModel } = require('../../models');
 const { CreateValidator } = require('../../validators/projects');
@@ -23,13 +24,10 @@ module.exports = (request, response) => {
 
         return saveProject(body)
             .then(project => {
-                if (project) {
-                    return response.status(201).json({
+                    return response.status(200).json({
                         status: true,
                         message: project
                     });
-                }
-                
             })
             . catch((error) => {
                 return response.status(500).json({

@@ -1,7 +1,10 @@
+/*jslint node: true */
 'use strict';
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
+const { ErrorHandler } = require('./src/middlewares');
 const { Mongo } = require('./src/config');
 const { Projects } = require('./src/routes');
 
@@ -17,6 +20,10 @@ app.use(
 
 app.use(
     Projects()
+);
+
+app.use(
+    ErrorHandler,
 );
 
 app.listen(3000, () => {
