@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const { ErrorHandler } = require('./src/middlewares');
 const { Mongo } = require('./src/config');
-const { Projects } = require('./src/routes');
+const { Projects, Tasks } = require('./src/routes');
 
 const app = express();
 
@@ -18,7 +18,8 @@ app.use(
 );
 
 app.use(
-    Projects()
+    Projects(),
+    Tasks()
 );
 
 app.use(

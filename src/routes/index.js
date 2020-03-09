@@ -1,7 +1,9 @@
 'use strict';
 
 const projects = require('./projects');
+const tasks = require('./tasks');
 
 module.exports = { 
-    Projects: () => projects
+    Projects: () => projects,
+    Tasks: () => tasks
 };
