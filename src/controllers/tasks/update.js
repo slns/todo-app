@@ -20,6 +20,15 @@ function update(taskId, task) {
     }    
 }
 
+function select(taskId) {
+    try {
+      return TasksModel.findById(taskId);
+      
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 module.exports = (request, response) => {
     const { taskId } = request.params;
     const { body: task } = request;
@@ -30,21 +39,13 @@ module.exports = (request, response) => {
             message: 'Task Id is required'
         });
     }
-
-    UpdateValidator.validateAsync(task)
-        .catch((error) => {
-            return response.status(500).json({
-                status: false,
-                message: error.message
-            });
-        });
-
-    return update(taskId, task)
-        .then(project => {
-                return response.status(200).json({
-                    status: true,
-                    message: task
-                });
+    
+    let taskResult;
+    select(taskId)
+        .then((task) => {
+            console.log('tasksObject ', task);
+            taskResult = task;
+           return task;
         })
         .catch((error) => {
             return response.status(500).json({
@@ -52,4 +53,30 @@ module.exports = (request, response) => {
                 message: error.message
             });
         });
+
+    console.log('taskResult ', taskResult);
+
+    UpdateValidator.validateAsync(task)
+        .then(() => {
+          return update(taskId, task)
+                .then(task => {
+                        return response.status(200).json({
+                            status: true,
+                            message: task
+                        });
+                })
+                .catch((error) => {
+                    return response.status(500).json({
+                        status: false,
+                        message: error.message
+                    });
+                });
+            })
+        .catch((error) => {
+            return response.status(500).json({
+                status: false,
+                message: error.message
+            });
+        });
+   
 };
