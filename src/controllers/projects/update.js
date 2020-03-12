@@ -26,7 +26,7 @@ module.exports = (request, response) => {
 
     if (!projectId) {
         return response.status(500).json({
-            staus: false,
+            status: false,
             message: 'Project Id is required'
         });
     }
