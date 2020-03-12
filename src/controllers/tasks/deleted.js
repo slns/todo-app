@@ -6,7 +6,7 @@ const {
 
 function remove(taskId) {
     try {
-       return TasksModel.deleteOne({_id:taskId});
+       return TasksModel.deleteOne({_id: taskId});
     } catch (error) {
         return error;
     }

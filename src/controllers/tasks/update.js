@@ -16,9 +16,10 @@ function update(taskId, task) {
     }    
 }
 
-async function taskById(taskId) {
+function select(taskId) {
     try {
-        return await TasksModel.findById(taskId);
+      return TasksModel.findById(taskId);
+      
     } catch (error) {
         console.error(error);
     }
@@ -34,15 +35,21 @@ module.exports = (request, response) => {
             message: 'Task Id is required'
         });
     }
-
-    const taskObject = taskById(taskId);
-console.log(taskObject)
-    if (taskObject.done) {
-        return response.status(500).json({
-            status: false,
-            message: 'Task Id is required 44444444444444444444444'
+    
+    let taskResult;
+    select(taskId)
+        .then((task) => {
+            console.log('tasksObject ', task);
+            taskResult = task;
+           return task;
+        })
+        .catch((error) => {
+            return response.status(500).json({
+                status: false,
+                message: error.message
+            });
         });
-    }
+
 
     UpdateValidator.validateAsync(task)
         .then(() => {
@@ -59,13 +66,14 @@ console.log(taskObject)
                         message: error.message
                     });
                 });
-        })
+            })
         .catch((error) => {
             return response.status(500).json({
                 status: false,
                 message: error.message
+                })
             });
-        });
+
 
    // const taskObject = taskById(taskId);
   //  console.log('taskObject ', taskObject);
