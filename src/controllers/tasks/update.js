@@ -22,7 +22,6 @@ function update(taskId, task) {
 function select(taskId) {
 	try {
 		return TasksModel.findById(taskId);
-
 	} catch (error) {
 		console.error(error);
 	}
@@ -65,7 +64,7 @@ module.exports = (request, response) => {
 				status: false,
 				message: error.message
 			});
-		});
+		 });
 		})
 		.catch((error) => {
 			return response.status(500).json({
@@ -78,6 +77,6 @@ module.exports = (request, response) => {
 			return response.status(500).json({
 				status: false,
 				message: error.message
-			})
+			});
 		});
 };

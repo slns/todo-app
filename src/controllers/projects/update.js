@@ -32,14 +32,8 @@ module.exports = (request, response) => {
     }
 
     UpdateValidator.validateAsync(project)
-        .catch((error) => {
-            return response.status(500).json({
-                status: false,
-                message: error.message
-            });
-        });
-
-    return update(projectId, project)
+        .then(() => {
+            return update(projectId, project)
         .then(project => {
                 return response.status(200).json({
                     status: true,
@@ -52,4 +46,11 @@ module.exports = (request, response) => {
                 message: error.message
             });
         });
+         })
+        .catch((error) => {
+            return response.status(500).json({
+                status: false,
+                message: error.message
+            });
+        });   
 };
