@@ -3,7 +3,7 @@
 const create = require('./create');
 const update = require('./update');
 const select = require('./select');
-const remove = require('./deleted');
+const remove = require('./delete');
 
 module.exports = {
     create,

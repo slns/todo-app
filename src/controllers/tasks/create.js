@@ -1,38 +1,52 @@
 'use strict';
 
-const { TasksModel } = require('../../models');
-const { CreateValidator } = require('../../validators/tasks');
+const {
+    TasksModel
+} = require('../../models');
+const {
+    CreateValidator
+} = require('../../validators/tasks');
+const {
+    errorResponse,
+    successResponse
+} = require('../../helpers/handle-response');
+
+module.exports = async (request, response) => {
+    const {
+        body: task
+    } = request;
+
+    try {
+        const validator = await validate(task);
+
+        const result = await saveTask(validator);
+
+        return response.status(201)
+            .json(successResponse({
+                data: result
+            }));
+
+    } catch (error) {
+        console.error(error);
+        return response.status(500)
+            .json(errorResponse({
+                error: error
+            }));
+    }
+};
 
 function saveTask(task) {
     try {
-      return TasksModel.create(task);
+        return TasksModel.create(task);
     } catch (error) {
-        console.error(error);
+        return error;
     }
 }
 
-module.exports = (request, response) => {
-        const { body } = request;
-
-        CreateValidator.validateAsync(body)
-        .catch((error) => {
-            return response.status(500).json({
-               status: false,
-               message: error.message
-            });
-        });
-
-        return saveTask(body)
-            .then(project => {
-                    return response.status(200).json({
-                        status: true,
-                        message: project
-                    });
-            })
-            . catch((error) => {
-                return response.status(500).json({
-                    status: false,
-                    message: error
-                });
-            });
-    };
+function validate(task) {
+    try {
+        return CreateValidator.validateAsync(task);
+    } catch (error) {
+        return error;
+    }
+}

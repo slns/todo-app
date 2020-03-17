@@ -6,6 +6,54 @@ const {
 const {
 	UpdateValidator
 } = require('../../validators/tasks');
+const {
+	errorResponse,
+	successResponse
+} = require('../../helpers/handle-response');
+
+module.exports = async (request, response) => {
+	const {
+		taskId
+	} = request.params;
+	const {
+		body: task
+	} = request;
+
+	if (!taskId) {
+		return response.status(500).json({
+			status: false,
+			message: 'Task Id is required'
+		});
+	}
+
+	try {
+		const validateTask = await UpdateValidator.validateAsync(task);
+
+		const taskSelect = await select(taskId);
+
+		if (taskSelect.done) {
+			return response.status(400)
+				.json(errorResponse({
+					error: {
+						message: 'It is not allowed to change completed tasks'
+					}
+				}));
+		}
+
+		const result = await update(taskId, validateTask);
+
+		return response.status(201)
+			.json(successResponse({
+				data: result
+			}));
+
+	} catch (error) {
+		return response.status(500)
+			.json(errorResponse({
+				error: error
+			}));
+	}
+};
 
 function update(taskId, task) {
 	try {
@@ -24,59 +72,6 @@ function select(taskId) {
 		return TasksModel.findById(taskId);
 	} catch (error) {
 		console.error(error);
+		return error;
 	}
 }
-
-module.exports = (request, response) => {
-	const {
-		taskId
-	} = request.params;
-	const {
-		body: task
-	} = request;
-
-	if (!taskId) {
-		return response.status(500).json({
-			status: false,
-			message: 'Task Id is required'
-		});
-	}
-
-	UpdateValidator.validateAsync(task)
-		.then(() => {
-			return select(taskId)
-		.then((taskSelect) => {
-			if (taskSelect.done) {
-				return response.status(412).json({
-					status: false,
-					message: 'It is not allowed to change completed tasks'
-				});
-			}
-			return update(taskId, task)
-		.then((task) => {
-				return response.status(200).json({
-					status: true,
-					message: task
-				});
-			})
-		.catch((error) => {
-			return response.status(500).json({
-				status: false,
-				message: error.message
-			});
-		 });
-		})
-		.catch((error) => {
-			return response.status(500).json({
-				status: false,
-				message: error.message
-			});
-		});
-		})
-		.catch((error) => {
-			return response.status(500).json({
-				status: false,
-				message: error.message
-			});
-		});
-};

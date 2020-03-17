@@ -6,23 +6,18 @@ const {
 const {
     UpdateValidator
 } = require('../../validators/projects');
+const {
+    errorResponse,
+    successResponse
+} = require('../../helpers/handle-response');
 
-function update(projectId, project) {
-    try {
-        return ProjectsModel.findOneAndUpdate({
-            _id: projectId
-        }, project,
-        {
-            returnOriginal: false
-        });
-    } catch (error) {
-        return error;
-    }    
-}
-
-module.exports = (request, response) => {
-    const { projectId } = request.params;
-    const { body: project } = request;
+module.exports = async (request, response) => {
+    const {
+        projectId
+    } = request.params;
+    const {
+        body: project
+    } = request;
 
     if (!projectId) {
         return response.status(500).json({
@@ -31,26 +26,32 @@ module.exports = (request, response) => {
         });
     }
 
-    UpdateValidator.validateAsync(project)
-        .then(() => {
-            return update(projectId, project)
-        .then(project => {
-                return response.status(200).json({
-                    status: true,
-                    message: project
-                });
-        })
-        .catch((error) => {
-            return response.status(500).json({
-                status: false,
-                message: error.message
-            });
-        });
-         })
-        .catch((error) => {
-            return response.status(500).json({
-                status: false,
-                message: error.message
-            });
-        });   
+    try {
+        const validateProject = await UpdateValidator.validateAsync(project);
+        
+        const result = await update(projectId, validateProject);
+        
+        return response.status(201)
+            .json(successResponse({
+                data: result
+            }));
+        
+    } catch (error) {
+        return response.status(500)
+            .json(errorResponse({
+                error: error
+            }));
+    }
 };
+
+function update(projectId, project) {
+    try {
+        return ProjectsModel.findOneAndUpdate({
+            _id: projectId
+        }, project, {
+            returnOriginal: false
+        });
+    } catch (error) {
+        return error;
+    }
+}

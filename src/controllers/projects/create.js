@@ -1,38 +1,52 @@
 'use strict';
 
-const { ProjectsModel } = require('../../models');
-const { CreateValidator } = require('../../validators/projects');
+const {
+    ProjectsModel
+} = require('../../models');
+const {
+    CreateValidator
+} = require('../../validators/projects');
+const {
+    errorResponse,
+    successResponse
+} = require('../../helpers/handle-response');
+
+module.exports = async (request, response) => {
+    const {
+        body: project
+    } = request;
+
+    try {
+        const validator = await validate(project);
+
+        const result = await saveProject(validator);
+
+        return response.status(201)
+            .json(successResponse({
+                data: result
+            }));
+
+    } catch (error) {
+        console.error(error);
+        return response.status(500)
+            .json(errorResponse({
+                error: error
+            }));
+    }
+};
 
 function saveProject(project) {
     try {
-      return ProjectsModel.create(project);
+        return ProjectsModel.create(project);
     } catch (error) {
-        console.error(error);
+        return error;
     }
 }
 
-module.exports = (request, response) => {
-        const { body } = request;
-
-        CreateValidator.validateAsync(body)
-        .catch((error) => {
-            return response.status(500).json({
-               status: false,
-               message: error.message
-            });
-        });
-
-        return saveProject(body)
-            .then(project => {
-                    return response.status(200).json({
-                        status: true,
-                        message: project
-                    });
-            })
-            . catch((error) => {
-                return response.status(500).json({
-                    status: false,
-                    message: error
-                });
-            });
-    };
+function validate(project) {
+    try {
+        return CreateValidator.validateAsync(project);
+    } catch (error) {
+        return error;
+    }
+}
