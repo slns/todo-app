@@ -7,6 +7,7 @@ module.exports.connect = () => {
     return new Promise((resolve, reject) => {
         mongoose.connect(MONGO_URI, {
             useNewUrlParser: true,
+            useCreateIndex: true,
             useUnifiedTopology: true
         });
         mongoose.set('useFindAndModify', false);

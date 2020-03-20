@@ -1,11 +1,8 @@
 'use strict';
 
 const {
-    TasksModel
+    UsersModel
 } = require('../../models');
-const {
-    CreateValidator
-} = require('../../validators/tasks');
 const {
     errorResponse,
     successResponse
@@ -13,15 +10,13 @@ const {
 
 module.exports = async (request, response) => {
     const {
-        body: task
-    } = request;
+        userId
+    } = request.params;
 
     try {
-        const validator = await validate(task);
+        const result = await select(userId);
 
-        const result = await saveTask(validator);
-
-        return response.status(201)
+        return response.status(200)
             .json(successResponse({
                 data: result
             }));
@@ -34,18 +29,15 @@ module.exports = async (request, response) => {
     }
 };
 
-function saveTask(task) {
+function select(userId) {
     try {
-        return TasksModel.create(task);
+        if (userId) {
+            return UsersModel.findOne({
+                _id: userId
+            });
+        }
+        return UsersModel.find();
     } catch (error) {
-        return error;
-    }
-}
-
-function validate(task) {
-    try {
-        return CreateValidator.validateAsync(task);
-    } catch (error) {
-        return error;
+        console.error(error);
     }
 }

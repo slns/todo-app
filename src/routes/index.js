@@ -1,9 +1,11 @@
 'use strict';
 
 const projects = require('./projects');
-const tasks = require('./tasks');
+const tasks    = require('./tasks');
+const users    = require('./users');
 
 module.exports = { 
     Projects: () => projects,
-    Tasks: () => tasks
+    Users:    () => users,
+    Tasks:    () => tasks
 };

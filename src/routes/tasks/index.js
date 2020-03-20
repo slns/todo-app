@@ -4,11 +4,11 @@ const { Router } = require('express');
 const TaskController = require('../../controllers/tasks');
 const route = Router();
 
-route.get('/tasks', (request, response, next) => {
+route.get('/tasks', (request, response) => {
     TaskController.select(request, response);
 });
 
-route.get('/tasks/:field(user|project|task)/:fieldId', (request, response, next) => {
+route.get('/tasks/:field(user|project|task)/:fieldId', (request, response) => {
     TaskController.select(request, response);
 });
 

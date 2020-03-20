@@ -37,31 +37,18 @@ function select(parameter) {
         }
         return TasksModel.find();
     } catch (error) {
-        console.error(error);
+        return error;
     }
 }
 
 function findParameter(fieldId, field) {
-    let parameter = {
-        '_id': fieldId
+    const resouce = {
+        user:    'userId',
+        project: 'projectId',
+        task:    '_id'
     };
 
-    switch (field) {
-        case 'user':
-            parameter = {
-                'userId': fieldId
-            };
-            break;
-        case 'project':
-            parameter = {
-                'projectId': fieldId
-            };
-            break;
-        case 'task':
-            parameter = {
-                '_id': fieldId
-            };
-            break;
-    }
-    return parameter;
+    return {
+        [resouce[field]]: fieldId
+    };
 }

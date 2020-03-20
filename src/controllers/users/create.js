@@ -1,11 +1,11 @@
 'use strict';
 
 const {
-    ProjectsModel
+    UsersModel
 } = require('../../models');
 const {
     CreateValidator
-} = require('../../validators/projects');
+} = require('../../validators/users');
 const {
     errorResponse,
     successResponse
@@ -13,13 +13,13 @@ const {
 
 module.exports = async (request, response) => {
     const {
-        body: project
+        body: user
     } = request;
 
     try {
-        const validator = await validate(project);
+        const userValidated = await validate(user);
 
-        const result = await saveProject(validator);
+        const result = await saveUser(userValidated);
 
         return response.status(201)
             .json(successResponse({
@@ -34,17 +34,17 @@ module.exports = async (request, response) => {
     }
 };
 
-function saveProject(project) {
+function saveUser(user) {
     try {
-        return ProjectsModel.create(project);
+        return UsersModel.create(user);
     } catch (error) {
         return error;
     }
 }
 
-function validate(project) {
+function validate(user) {
     try {
-        return CreateValidator.validateAsync(project);
+        return CreateValidator.validateAsync(user);
     } catch (error) {
         return error;
     }

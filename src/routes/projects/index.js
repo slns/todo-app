@@ -4,11 +4,11 @@ const { Router } = require('express');
 const ProjectsController = require('../../controllers/projects');
 const route = Router();
 
-route.get('/projects', (request, response, next) => {
+route.get('/projects', (request, response) => {
     ProjectsController.select(request, response);
 });
 
-route.get('/projects/:projectId', (request, response, next) => {
+route.get('/projects/:projectId', (request, response) => {
     ProjectsController.select(request, response);
 });
 

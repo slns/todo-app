@@ -71,7 +71,6 @@ function select(taskId) {
 	try {
 		return TasksModel.findById(taskId);
 	} catch (error) {
-		console.error(error);
 		return error;
 	}
 }
