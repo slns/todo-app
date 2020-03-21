@@ -1,6 +1,8 @@
 'use strict';
 
-const { Router } = require('express');
+const {
+    Router
+} = require('express');
 const TaskController = require('../../controllers/tasks');
 const route = Router();
 

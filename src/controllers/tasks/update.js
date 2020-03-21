@@ -7,9 +7,14 @@ const {
 	UpdateValidator
 } = require('../../validators/tasks');
 const {
-	errorResponse,
-	successResponse
+	handleResponseError,
+	handleResponseSuccess
 } = require('../../helpers/handle-response');
+const {
+	STATUS_CODE_ERROR,
+	STATUS_CODE_SUCCESS,
+	STATUS_CODE_BAD_REQUEST
+} = require('../../helpers/constants');
 
 module.exports = async (request, response) => {
 	const {
@@ -20,9 +25,12 @@ module.exports = async (request, response) => {
 	} = request;
 
 	if (!taskId) {
-		return response.status(500).json({
-			status: false,
-			message: 'Task Id is required'
+		const error = new Error('Task Id is required ');
+
+		return handleResponseError({
+			statusCode: STATUS_CODE_ERROR,
+			error,
+			response
 		});
 	}
 
@@ -32,45 +40,40 @@ module.exports = async (request, response) => {
 		const taskSelect = await select(taskId);
 
 		if (taskSelect.done) {
-			return response.status(400)
-				.json(errorResponse({
-					error: {
-						message: 'It is not allowed to change completed tasks'
-					}
-				}));
+			const error = new Error('It is not allowed to change completed tasks');
+
+			return handleResponseError({
+				statusCode: STATUS_CODE_BAD_REQUEST,
+				error,
+				response
+			});
 		}
 
 		const result = await update(taskId, validateTask);
 
-		return response.status(201)
-			.json(successResponse({
-				data: result
-			}));
+		return handleResponseSuccess({
+			statusCode: STATUS_CODE_SUCCESS,
+			result,
+			response
+		});
 
 	} catch (error) {
-		return response.status(500)
-			.json(errorResponse({
-				error: error
-			}));
+		return handleResponseError({
+			statusCode: STATUS_CODE_ERROR,
+			error,
+			response
+		});
 	}
 };
 
 function update(taskId, task) {
-	try {
-		return TasksModel.findOneAndUpdate({
-			_id: taskId
-		}, task, {
-			returnOriginal: false
-		});
-	} catch (error) {
-		return error;
-	}
+	return TasksModel.findOneAndUpdate({
+		_id: taskId
+	}, task, {
+		returnOriginal: false
+	});
 }
 
 function select(taskId) {
-	try {
-		return TasksModel.findById(taskId);
-	} catch (error) {
-		return error;
-	}
+	return TasksModel.findById(taskId);
 }

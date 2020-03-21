@@ -29,21 +29,21 @@ User.plugin(uniqueValidator, {
     type: 'mongoose-unique-validator'
 });
 
-User.pre('save', function(next) {
+User.pre('save', function (next) {
     this.password = incryptPassword(this.password);
     next();
 });
 
 User.pre('findOneAndUpdate', async function (next) {
     const passwordToUpdate = this.getUpdate().password;
-  if (passwordToUpdate) {
-      this.update({}, {
-          password: incryptPassword(passwordToUpdate)
-      });
-  }      
-        next();
+    if (passwordToUpdate) {
+        this.update({}, {
+            password: incryptPassword(passwordToUpdate)
+        });
+    }
+    next();
 });
-    
+
 function incryptPassword(password) {
     return bcrypt.hashSync(password, saltRounds);
 }

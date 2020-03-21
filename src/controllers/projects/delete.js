@@ -4,43 +4,56 @@ const {
     ProjectsModel
 } = require('../../models');
 const {
-    errorResponse,
-    successResponse
+    handleResponseError,
+    handleResponseSuccess
 } = require('../../helpers/handle-response');
+const {
+    STATUS_CODE_ERROR,
+    STATUS_CODE_SUCCESS,
+} = require('../../helpers/constants');
 
-module.exports = async (request, response ) => {
-    const { projectId } = request.params;
+module.exports = async (request, response) => {
+    const {
+        projectId
+    } = request.params;
 
     if (!projectId) {
-        return response.status(500).json({
-            staus: false,
-            message: 'Project Id is required'
+        const error = new Error('Project Id is required ');
+
+        return handleResponseError({
+            statusCode: STATUS_CODE_ERROR,
+            error,
+            response
         });
     }
 
     try {
         const result = await remove(projectId);
 
-        return response.status(200)
-            .json(successResponse({
-                data: result,
-                message: 'Project deleted successfully '
-            }));
+        let message = 'Project deleted successfully ';
+
+        if (!result.deletedCount) {
+            message = 'Project not existe ';
+        }
+
+        return handleResponseSuccess({
+            statusCode: STATUS_CODE_SUCCESS,
+            result,
+            message,
+            response
+        });
 
     } catch (error) {
-        return response.status(500)
-            .json(errorResponse({
-                error: error
-            }));
+        return handleResponseError({
+            statusCode: STATUS_CODE_ERROR,
+            error,
+            response
+        });
     }
 };
 
 function remove(projectId) {
-    try {
-        return ProjectsModel.deleteOne({
-            _id: projectId
-        });
-    } catch (error) {
-        return error;
-    }
+    return ProjectsModel.deleteOne({
+        _id: projectId
+    });
 }

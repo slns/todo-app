@@ -3,9 +3,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const { ErrorHandler } = require('./src/middlewares');
-const { Mongo } = require('./src/config');
-const { Projects, Tasks, Users } = require('./src/routes');
+const {
+    ErrorHandler
+} = require('./src/middlewares');
+const {
+    Mongo
+} = require('./src/config');
+const {
+    Projects,
+    Tasks,
+    Users
+} = require('./src/routes');
 
 const app = express();
 

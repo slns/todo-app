@@ -7,9 +7,13 @@ const {
     UpdateValidator
 } = require('../../validators/projects');
 const {
-    errorResponse,
-    successResponse
+    handleResponseError,
+    handleResponseSuccess
 } = require('../../helpers/handle-response');
+const {
+    STATUS_CODE_ERROR,
+    STATUS_CODE_SUCCESS
+} = require('../../helpers/constants');
 
 module.exports = async (request, response) => {
     const {
@@ -20,38 +24,40 @@ module.exports = async (request, response) => {
     } = request;
 
     if (!projectId) {
-        return response.status(500).json({
-            status: false,
-            message: 'Project Id is required'
+        const error = new Error('Project Id is required ');
+
+        return handleResponseError({
+            statusCode: STATUS_CODE_ERROR,
+            error,
+            response
         });
     }
 
     try {
         const validateProject = await UpdateValidator.validateAsync(project);
-        
+
         const result = await update(projectId, validateProject);
-        
-        return response.status(201)
-            .json(successResponse({
-                data: result
-            }));
-        
+
+        return handleResponseSuccess({
+            statusCode: STATUS_CODE_SUCCESS,
+            result,
+            response
+        });
+
     } catch (error) {
-        return response.status(500)
-            .json(errorResponse({
-                error: error
-            }));
+        return handleResponseError({
+            statusCode: STATUS_CODE_ERROR,
+            error,
+            response
+        });
     }
 };
 
 function update(projectId, project) {
-    try {
-        return ProjectsModel.findOneAndUpdate({
-            _id: projectId
-        }, project, {
-            returnOriginal: false
-        });
-    } catch (error) {
-        return error;
-    }
+    return ProjectsModel.findOneAndUpdate({
+        _id: projectId
+    }, project, {
+        returnOriginal: false
+    });
+
 }

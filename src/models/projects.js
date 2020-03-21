@@ -12,9 +12,8 @@ const schema = new Schema({
         type: String,
         required: true
     }
-},
-    {
-        timestamps: true
-    });
+}, {
+    timestamps: true
+});
 
 module.exports = Mongoose.model('Project', schema);

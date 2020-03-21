@@ -4,9 +4,13 @@ const {
     UsersModel
 } = require('../../models');
 const {
-    errorResponse,
-    successResponse
+    handleResponseError,
+    handleResponseSuccess
 } = require('../../helpers/handle-response');
+const {
+    STATUS_CODE_ERROR,
+    STATUS_CODE_SUCCESS
+} = require('../../helpers/constants');
 
 module.exports = async (request, response) => {
     const {
@@ -16,28 +20,26 @@ module.exports = async (request, response) => {
     try {
         const result = await select(userId);
 
-        return response.status(200)
-            .json(successResponse({
-                data: result
-            }));
+        return handleResponseSuccess({
+            statusCode: STATUS_CODE_SUCCESS,
+            result,
+            response
+        });
 
     } catch (error) {
-        return response.status(500)
-            .json(errorResponse({
-                error: error
-            }));
+        return handleResponseError({
+            statusCode: STATUS_CODE_ERROR,
+            error,
+            response
+        });
     }
 };
 
 function select(userId) {
-    try {
-        if (userId) {
-            return UsersModel.findOne({
-                _id: userId
-            });
-        }
-        return UsersModel.find();
-    } catch (error) {
-        console.error(error);
+    if (userId) {
+        return UsersModel.findOne({
+            _id: userId
+        });
     }
+    return UsersModel.find();
 }

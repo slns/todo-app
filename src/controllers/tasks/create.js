@@ -7,9 +7,13 @@ const {
     CreateValidator
 } = require('../../validators/tasks');
 const {
-    errorResponse,
-    successResponse
+    handleResponseError,
+    handleResponseSuccess
 } = require('../../helpers/handle-response');
+const {
+    STATUS_CODE_ERROR,
+    STATUS_CODE_CREATE
+} = require('../../helpers/constants');
 
 module.exports = async (request, response) => {
     const {
@@ -21,31 +25,25 @@ module.exports = async (request, response) => {
 
         const result = await saveTask(validator);
 
-        return response.status(201)
-            .json(successResponse({
-                data: result
-            }));
+        return handleResponseSuccess({
+            statusCode: STATUS_CODE_CREATE,
+            result,
+            response
+        });
 
     } catch (error) {
-        return response.status(500)
-            .json(errorResponse({
-                error: error
-            }));
+        return handleResponseError({
+            statusCode: STATUS_CODE_ERROR,
+            error,
+            response
+        });
     }
 };
 
 function saveTask(task) {
-    try {
-        return TasksModel.create(task);
-    } catch (error) {
-        return error;
-    }
+    return TasksModel.create(task);
 }
 
 function validate(task) {
-    try {
-        return CreateValidator.validateAsync(task);
-    } catch (error) {
-        return error;
-    }
+    return CreateValidator.validateAsync(task);
 }

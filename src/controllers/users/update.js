@@ -7,9 +7,13 @@ const {
     UpdateValidator
 } = require('../../validators/users');
 const {
-    errorResponse,
-    successResponse
+    handleResponseError,
+    handleResponseSuccess
 } = require('../../helpers/handle-response');
+const {
+    STATUS_CODE_ERROR,
+    STATUS_CODE_SUCCESS
+} = require('../../helpers/constants');
 
 module.exports = async (request, response) => {
     const {
@@ -20,40 +24,41 @@ module.exports = async (request, response) => {
     } = request;
 
     if (!userId) {
-        return response.status(500).json({
-            status: false,
-            message: 'User Id is required'
+        const error = new Error('User Id is required ');
+
+        return handleResponseError({
+            statusCode: STATUS_CODE_ERROR,
+            error,
+            response
         });
     }
 
     try {
         const validateUser = await UpdateValidator.validateAsync(user);
-        
+
         const result = await update(userId, validateUser);
-        
-        return response.status(201)
-            .json(successResponse({
-                data: result
-            }));
-        
+
+        return handleResponseSuccess({
+            statusCode: STATUS_CODE_SUCCESS,
+            result,
+            response
+        });
+
     } catch (error) {
-        return response.status(500)
-            .json(errorResponse({
-                error: error
-            }));
+        return handleResponseError({
+            statusCode: STATUS_CODE_ERROR,
+            error,
+            response
+        });
     }
 };
 
 function update(userId, user) {
-    try {
-        return UsersModel.findOneAndUpdate({
-            _id: userId
-        }, user, {
-                returnOriginal: false,
-                runValidators: true,
-                context: 'query'
-        });
-    } catch (error) {
-        return error;
-    }
+    return UsersModel.findOneAndUpdate({
+        _id: userId
+    }, user, {
+        returnOriginal: false,
+        runValidators: true,
+        context: 'query'
+    });
 }

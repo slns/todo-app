@@ -20,13 +20,12 @@ const schema = new Schema({
         type: Boolean,
         required: true,
         default: false
-    }, 
+    },
     endDate: {
         type: Date
     }
-},
-    {
-        timestamps: true
-    });
+}, {
+    timestamps: true
+});
 
 module.exports = Mongoose.model('Tasks', schema);
