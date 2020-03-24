@@ -12,13 +12,13 @@ const {
     STATUS_CODE_SUCCESS
 } = require('../../helpers/constants');
 
-module.exports = async (request, response) => {
+const select = async (request, response) => {
     const {
         userId
     } = request.params;
 
     try {
-        const result = await select(userId);
+        const result = await selectById(userId);
 
         return handleResponseSuccess({
             statusCode: STATUS_CODE_SUCCESS,
@@ -35,11 +35,20 @@ module.exports = async (request, response) => {
     }
 };
 
-function select(userId) {
+function selectById(userId) {
     if (userId) {
         return UsersModel.findOne({
             _id: userId
         });
     }
     return UsersModel.find();
+}
+
+function selectOneByEmail(email) {
+    return UsersModel.findOne({email});
+}
+
+module.exports = {
+    selectOneByEmail,
+    select
 }
