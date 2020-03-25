@@ -35,17 +35,9 @@ module.exports = async (request, response) => {
 };
 
 function saveUser(user) {
-    try {
         return UsersModel.create(user);
-    } catch (error) {
-        return error;
-    }
 }
 
 function validate(user) {
-    try {
         return CreateValidator.validateAsync(user);
-    } catch (error) {
-        return error;
-    }
 }

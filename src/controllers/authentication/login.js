@@ -26,7 +26,7 @@ module.exports = async (request, response) => {
             response
         });
     }
-    const user = await getUser(email);
+    const user = await selectOneByEmail(email);
 
     if (!user) {
         const error = new Error('User not found');
@@ -38,40 +38,68 @@ module.exports = async (request, response) => {
         });
     }
 
+    const validateUser = await validateUserPassword(password, user);
+
+    if (!validateUser) {
+        const error = new Error('Wrong Credencials');
+        return handleResponseError({
+            statusCode: STATUS_CODE_ERROR,
+            error,
+            response
+        });
+    }
+
+    const userCopy = omitAndRenameKey(user);
+
+    const token = generateToken(user);
+
+    const result = {
+        user: userCopy,
+        token: token
+    };
+
     return handleResponseSuccess({
         statusCode: STATUS_CODE_CREATE,
-        result: validateUserPasswordAndGenerateToken(password, user),
+        result: result,
         response
     });
+};
+
+function validateUserPassword(password, user) {
+    return bcrypt.compare(password, user.password);
 }
 
-function getUser(email) {
-    return selectOneByEmail(email);
-}
-
-function validateUserPasswordAndGenerateToken(password, user) {
-    const match = bcrypt.compare(user.password, password);
-
-    if (!match) {
-        return new Error('Wrong Credencials');
-        
-    }
-    console.log('typeof user ', user.password)
-    const userWithoutPassword = omit(user, ["password", "__v"]);
-
-    const token = jwt.sign(
-        {
+function generateToken(user) {
+    return jwt.sign({
             userId: user._id,
         },
-        process.env.SECRET_KEY,
-        {
-         expiresIn: '1h'
-        });
+        process.env.SECRET_KEY, {
+            expiresIn: '1h'
+        });    
+}
+
+function omitAndRenameKey(user) {
+    const omitUserFields = omitFields(user);
+
+    const userConvert = renameKey(omitUserFields);
     
-    
-    console.log('userWithoutPassword ', userWithoutPassword.__v)
-    return {
-        user: userWithoutPassword,
-        token
-    };
+    return userConvert;
+}
+
+function omitFields(user) {
+    const copyUser = { ...user };
+    //const copyUser = Object.assign({}, user);
+
+    return omit(copyUser._doc, ["password", "__v", "createdAt", "updatedAt"]);
+}
+
+function renameKey(userWithoutFields) {
+    const userConvert = { id: userWithoutFields._id, ...userWithoutFields };
+    delete userConvert._id;
+    // if (userWithoutFields) {
+    //     userWithoutFields.id = userWithoutFields._id;
+    //     delete userWithoutFields._id;
+    // }
+
+    return userConvert;
 }
