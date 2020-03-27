@@ -4,9 +4,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const cors = require('cors');
-require('dotenv').config()
+require('dotenv').config();
 const {
-    ErrorHandler
+    ErrorHandler,
+    verifyJwt
 } = require('./src/middlewares');
 const {
     Mongo
@@ -15,7 +16,8 @@ const {
     Auth,
     Projects,
     Tasks,
-    Users
+    UsersWithAuthentication,
+    UsersWithoutAuthentication
 } = require('./src/routes');
 
 const app = express();
@@ -32,9 +34,11 @@ app.use(
 
 app.use(
     Auth(),
+    UsersWithoutAuthentication(),
+    verifyJwt,
     Projects(),
     Tasks(),
-    Users()
+    UsersWithAuthentication()
 );
 
 app.use(

@@ -49,13 +49,16 @@ module.exports = async (request, response) => {
         });
     }
 
-    const userCopy = omitAndRenameKey(user);
+    const userCopy = {
+        id: user._id,
+        ...omit(user._doc, ["_id", "password", "__v", "createdAt", "updatedAt"])
+    };
 
     const token = generateToken(user);
 
     const result = {
         user: userCopy,
-        token: token
+        token
     };
 
     return handleResponseSuccess({
@@ -76,30 +79,4 @@ function generateToken(user) {
         process.env.SECRET_KEY, {
             expiresIn: '1h'
         });    
-}
-
-function omitAndRenameKey(user) {
-    const omitUserFields = omitFields(user);
-
-    const userConvert = renameKey(omitUserFields);
-    
-    return userConvert;
-}
-
-function omitFields(user) {
-    const copyUser = { ...user };
-    //const copyUser = Object.assign({}, user);
-
-    return omit(copyUser._doc, ["password", "__v", "createdAt", "updatedAt"]);
-}
-
-function renameKey(userWithoutFields) {
-    const userConvert = { id: userWithoutFields._id, ...userWithoutFields };
-    delete userConvert._id;
-    // if (userWithoutFields) {
-    //     userWithoutFields.id = userWithoutFields._id;
-    //     delete userWithoutFields._id;
-    // }
-
-    return userConvert;
 }

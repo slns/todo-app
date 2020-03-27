@@ -1,41 +1,32 @@
-"use strict";
+'use strict';
 
+const {
+    Router
+} = require('express');
 const jwt = require('jsonwebtoken');
 const {
     handleResponseError,
-} = require('../helpers/handle-response');
-const {
-    STATUS_CODE_ERROR,
     STATUS_CODE_BAD_UNAUTHORIZED
-} = require('../helpers/constants');
+} = require('../helpers');
 
-const verifyJwt = (request, response, next) => {
+const route = Router();
 
-    //const token = request.headers['x-access-token'];
-    const authHeader = request.headers.authorization;
+route.use((request, response, next) => {
 
-    if (!authHeader) {
-        return handleResponseError({
-            statusCode: STATUS_CODE_BAD_UNAUTHORIZED,
-            error: new Error('No token provided.'),
-            response
-        });
-    }
+    const token = request.headers.authorization;
 
-    const token = authHeader.split(' ')[1];
-
-    jwt.verify(token, process.env.SECRET_KEY, function (error, decoded) {
-        if (error) {
+    jwt.verify(token, process.env.SECRET_KEY, function (err, decoded) {
+        if (err) {
             return handleResponseError({
-                statusCode: STATUS_CODE_ERROR,
-                error: error,
+                statusCode: STATUS_CODE_BAD_UNAUTHORIZED,
+                error: new Error('Unauthorized'),
                 response
             });
         }
 
-        request.userId = decoded.id;
+        request.body.userId = decoded.id;
         next();
     });
-};
+});
 
-module.exports = verifyJwt;
+module.exports = route;

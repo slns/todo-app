@@ -2,12 +2,14 @@
 
 const projects = require('./projects');
 const tasks = require('./tasks');
-const users = require('./users');
+const usersWithAuthentication = require('./usersWithAuthentication');
+const usersWithoutAuthentication = require('./usersWithoutAuthentication');
 const auth = require('./authentication');
 
 module.exports = {
     Auth: () => auth,
     Projects: () => projects,
-    Users: () => users,
+    UsersWithAuthentication: () => usersWithAuthentication,
+    UsersWithoutAuthentication: () => usersWithoutAuthentication,
     Tasks: () => tasks
 };

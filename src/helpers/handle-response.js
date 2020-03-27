@@ -30,7 +30,7 @@ const handleResponseError = ({
 }) => {
     return response.status(statusCode)
         .json(errorResponse({
-            error: error,
+            error,
             message
         }));
 };
@@ -49,8 +49,8 @@ const handleResponseSuccess = ({
 };
 
 module.exports = {
-    errorResponse: errorResponse,
-    successResponse: successResponse,
-    handleResponseError: handleResponseError,
-    handleResponseSuccess: handleResponseSuccess
+    errorResponse,
+    successResponse,
+    handleResponseError,
+    handleResponseSuccess
 };

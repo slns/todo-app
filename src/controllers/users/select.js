@@ -19,14 +19,15 @@ const select = async (request, response) => {
 
     try {
         const result = await selectById(userId);
-
+        
         return handleResponseSuccess({
             statusCode: STATUS_CODE_SUCCESS,
             result,
             response
         });
 
-    } catch (error) {
+    } catch (error) {    
+        console.log('result', error);
         return handleResponseError({
             statusCode: STATUS_CODE_ERROR,
             error,
