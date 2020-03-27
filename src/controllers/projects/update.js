@@ -1,5 +1,6 @@
 'use strict';
 
+const omit = require('lodash/omit');
 const {
     ProjectsModel
 } = require('../../models');
@@ -20,8 +21,10 @@ module.exports = async (request, response) => {
         projectId
     } = request.params;
     const {
-        body: project
+        body: projectBody
     } = request;
+
+    const project = omit(projectBody, ["userId"]);
 
     if (!projectId) {
         const error = new Error('Project Id is required ');
@@ -36,7 +39,12 @@ module.exports = async (request, response) => {
     try {
         const validateProject = await UpdateValidator.validateAsync(project);
 
-        const result = await update(projectId, validateProject);
+        const projectUpdated = await update(projectId, validateProject, projectBody.userId);
+
+        const result = {
+            id: projectUpdated._id,
+            ...omit(projectUpdated._doc, ["_id", "__v", "createdAt", "updatedAt"])
+        };
 
         return handleResponseSuccess({
             statusCode: STATUS_CODE_SUCCESS,
@@ -53,9 +61,10 @@ module.exports = async (request, response) => {
     }
 };
 
-function update(projectId, project) {
+function update(projectId, project, userId) {
     return ProjectsModel.findOneAndUpdate({
-        _id: projectId
+        _id: projectId,
+        userId
     }, project, {
         returnOriginal: false
     });

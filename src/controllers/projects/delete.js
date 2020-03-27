@@ -16,6 +16,9 @@ module.exports = async (request, response) => {
     const {
         projectId
     } = request.params;
+    const {
+        userId
+    } = request.body;
 
     if (!projectId) {
         const error = new Error('Project Id is required ');
@@ -28,7 +31,7 @@ module.exports = async (request, response) => {
     }
 
     try {
-        const result = await remove(projectId);
+        const result = await remove(projectId, userId);
 
         let message = 'Project deleted successfully ';
 
@@ -52,8 +55,9 @@ module.exports = async (request, response) => {
     }
 };
 
-function remove(projectId) {
+function remove(projectId, userId) {
     return ProjectsModel.deleteOne({
-        _id: projectId
+        _id: projectId,
+        userId
     });
 }

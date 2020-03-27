@@ -1,5 +1,6 @@
 'use strict';
 
+const omit = require('lodash/omit');
 const {
     ProjectsModel
 } = require('../../models');
@@ -16,9 +17,26 @@ module.exports = async (request, response) => {
     const {
         projectId
     } = request.params;
+    const {
+        userId
+    } = request.body;
 
     try {
-        const result = await select(projectId);
+        const project = await select(projectId, userId);
+
+        let result = {
+            id: project._id,
+            ...omit(project._doc, ["_id", "__v", "createdAt", "updatedAt"])
+        };
+
+        if (project.length > 1) {
+            result = project.map((project) => {
+                return {
+                    id: project._id,
+                    ...omit(project._doc, ["_id", "__v", "createdAt", "updatedAt"])
+                };
+            });
+        }
 
         return handleResponseSuccess({
             statusCode: STATUS_CODE_SUCCESS,
@@ -35,11 +53,14 @@ module.exports = async (request, response) => {
     }
 };
 
-function select(projectId) {
+function select(projectId, userId) {
     if (projectId) {
         return ProjectsModel.findOne({
-            _id: projectId
+            _id: projectId,
+            userId
         });
     }
-    return ProjectsModel.find();
+    return ProjectsModel.find({
+        userId
+    });
 }

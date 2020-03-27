@@ -1,5 +1,6 @@
 'use strict';
 
+const omit = require('lodash/omit');
 const {
     TasksModel
 } = require('../../models');
@@ -17,14 +18,29 @@ module.exports = async (request, response) => {
         fieldId,
         field
     } = request.params;
+    const {
+        userId
+    } = request.body;
 
     let parameter = null;
     if (fieldId) {
         parameter = findParameter(fieldId, field);
     }
+    //if (!parameter.userId || parameter.userId !== userId) {
+        parameter.userId = userId;
+    //}
+
 
     try {
-        const result = await select(parameter);
+        const task = await select(parameter);
+
+        const result = task.map((task) => {
+                return {
+                    id: task._id,
+                    ...omit(task._doc, ["_id", "__v", "createdAt", "updatedAt"])
+                };
+            });
+
 
         return handleResponseSuccess({
             statusCode: STATUS_CODE_SUCCESS,

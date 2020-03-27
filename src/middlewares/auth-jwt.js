@@ -24,7 +24,7 @@ route.use((request, response, next) => {
             });
         }
 
-        request.body.userId = decoded.id;
+        request.body.userId = decoded.userId;
         next();
     });
 });

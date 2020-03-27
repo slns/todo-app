@@ -13,11 +13,8 @@ const {
     Mongo
 } = require('./src/config');
 const {
-    Auth,
-    Projects,
-    Tasks,
-    UsersWithAuthentication,
-    UsersWithoutAuthentication
+    routesWithoutAuthentication,
+    routesWithAuthentication
 } = require('./src/routes');
 
 const app = express();
@@ -33,12 +30,9 @@ app.use(
 );
 
 app.use(
-    Auth(),
-    UsersWithoutAuthentication(),
+    routesWithoutAuthentication(),
     verifyJwt,
-    Projects(),
-    Tasks(),
-    UsersWithAuthentication()
+    routesWithAuthentication()
 );
 
 app.use(

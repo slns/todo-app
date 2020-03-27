@@ -1,5 +1,6 @@
 'use strict';
 
+const omit = require('lodash/omit');
 const {
     TasksModel
 } = require('../../models');
@@ -23,7 +24,12 @@ module.exports = async (request, response) => {
     try {
         const validator = await validate(task);
 
-        const result = await saveTask(validator);
+        const taskSaved = await saveTask(validator);
+
+        let result = {
+            id: taskSaved._id,
+            ...omit(taskSaved._doc, ["_id", "__v", "createdAt", "updatedAt"])
+        };
 
         return handleResponseSuccess({
             statusCode: STATUS_CODE_CREATE,

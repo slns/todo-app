@@ -1,5 +1,6 @@
 'use strict';
 
+const omit = require('lodash/omit');
 const {
 	TasksModel
 } = require('../../models');
@@ -21,8 +22,10 @@ module.exports = async (request, response) => {
 		taskId
 	} = request.params;
 	const {
-		body: task
+		body: taskBody
 	} = request;
+
+	const task = omit(taskBody, ["userId"]);
 
 	if (!taskId) {
 		const error = new Error('Task Id is required ');
@@ -49,7 +52,12 @@ module.exports = async (request, response) => {
 			});
 		}
 
-		const result = await update(taskId, validateTask);
+		const taskUpdated = await update(taskId, validateTask, taskBody.userId);
+
+		const result = {
+			id: taskUpdated._id,
+			...omit(taskUpdated._doc, ["_id", "__v", "createdAt", "updatedAt"])
+		};
 
 		return handleResponseSuccess({
 			statusCode: STATUS_CODE_SUCCESS,
@@ -66,9 +74,10 @@ module.exports = async (request, response) => {
 	}
 };
 
-function update(taskId, task) {
+function update(taskId, task, userId) {
 	return TasksModel.findOneAndUpdate({
-		_id: taskId
+		_id: taskId,
+		userId
 	}, task, {
 		returnOriginal: false
 	});

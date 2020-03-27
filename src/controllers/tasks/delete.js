@@ -16,6 +16,9 @@ module.exports = async (request, response) => {
     const {
         taskId
     } = request.params;
+    const {
+        userId
+    } = request.body;
 
     if (!taskId) {
         const error = new Error('Task Id is required ');
@@ -28,7 +31,7 @@ module.exports = async (request, response) => {
     }
 
     try {
-        const result = await remove(taskId);
+        const result = await remove(taskId, userId);
 
         let message = 'Task deleted successfully ';
 
@@ -52,8 +55,9 @@ module.exports = async (request, response) => {
     }
 };
 
-function remove(taskId) {
+function remove(taskId, userId) {
     return TasksModel.deleteOne({
-        _id: taskId
+        _id: taskId,
+            userId
     });
 }

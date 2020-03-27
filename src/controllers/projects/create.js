@@ -1,5 +1,6 @@
 'use strict';
 
+const omit = require('lodash/omit');
 const {
     ProjectsModel
 } = require('../../models');
@@ -23,7 +24,12 @@ module.exports = async (request, response) => {
     try {
         const validator = await validate(project);
 
-        const result = await saveProject(validator);
+        const projectSaved = await saveProject(validator);
+
+        let result = {
+            id: projectSaved._id,
+            ...omit(projectSaved._doc, ["_id", "__v", "createdAt", "updatedAt"])
+        };
 
         return handleResponseSuccess({
             statusCode: STATUS_CODE_CREATE,
