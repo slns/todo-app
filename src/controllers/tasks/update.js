@@ -22,10 +22,9 @@ module.exports = async (request, response) => {
 		taskId
 	} = request.params;
 	const {
-		body: taskBody
-	} = request;
-
-	const task = omit(taskBody, ["userId"]);
+		userId,
+		...task
+	} = request.body;
 
 	if (!taskId) {
 		const error = new Error('Task Id is required ');
@@ -52,7 +51,7 @@ module.exports = async (request, response) => {
 			});
 		}
 
-		const taskUpdated = await update(taskId, validateTask, taskBody.userId);
+		const taskUpdated = await update(taskId, validateTask, userId);
 
 		const result = {
 			id: taskUpdated._id,

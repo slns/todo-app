@@ -21,10 +21,9 @@ module.exports = async (request, response) => {
         projectId
     } = request.params;
     const {
-        body: projectBody
-    } = request;
-
-    const project = omit(projectBody, ["userId"]);
+        userId,
+        ...project
+    } = request.body;
 
     if (!projectId) {
         const error = new Error('Project Id is required ');
@@ -39,7 +38,7 @@ module.exports = async (request, response) => {
     try {
         const validateProject = await UpdateValidator.validateAsync(project);
 
-        const projectUpdated = await update(projectId, validateProject, projectBody.userId);
+        const projectUpdated = await update(projectId, validateProject, userId);
 
         const result = {
             id: projectUpdated._id,

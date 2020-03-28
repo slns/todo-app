@@ -26,10 +26,9 @@ module.exports = async (request, response) => {
     if (fieldId) {
         parameter = findParameter(fieldId, field);
     }
-    //if (!parameter.userId || parameter.userId !== userId) {
+    if (!userId) {
         parameter.userId = userId;
-    //}
-
+    }
 
     try {
         const task = await select(parameter);
